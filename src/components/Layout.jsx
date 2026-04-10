@@ -1,0 +1,17 @@
+import { Outlet } from 'react-router-dom';
+import NavBar from './NavBar';
+
+const Layout = () => {
+  return (
+    <div className="min-h-screen bg-white">
+      <div className="min-h-screen w-full bg-white">
+        <NavBar />
+        <main className="px-6 pb-12 pt-4 md:px-10 md:pb-16 md:pt-2 lg:px-16 xl:px-20">
+          <Outlet />
+        </main>
+      </div>
+    </div>
+  );
+};
+
+export default Layout;
