@@ -7,15 +7,56 @@ const links = [
   { label: 'Articles', to: '/articles' },
 ];
 
-const navLinkClassName = ({ isActive }) =>
-  [
+const getNavLinkClassName = (variant) => ({ isActive }) => {
+  if (variant === 'minimal') {
+    return [
+      'rounded-full px-4 py-2 text-sm font-medium transition duration-200',
+      isActive
+        ? 'bg-neutral-950 text-white'
+        : 'text-neutral-600 hover:bg-neutral-100 hover:text-neutral-950',
+    ].join(' ');
+  }
+  return [
     'border-b px-2 py-2 text-sm font-medium transition duration-200',
     isActive
       ? 'border-zinc-400 text-zinc-900'
       : 'border-transparent text-zinc-500 hover:border-zinc-300 hover:text-zinc-900',
   ].join(' ');
+};
 
-const NavBar = () => {
+const NavBar = ({ variant = 'default' }) => {
+  const isMinimal = variant === 'minimal';
+
+  if (isMinimal) {
+    return (
+      <header className="sticky top-0 z-30 border-b border-neutral-200 bg-white/90 backdrop-blur">
+        <div className="flex items-center justify-between px-6 py-4 md:px-10 lg:px-16">
+          <NavLink to="/" className="flex items-center gap-3">
+            <span className="flex h-9 w-9 items-center justify-center rounded-full border border-neutral-300 text-sm font-semibold text-neutral-950">
+              O
+            </span>
+            <span className="text-sm font-semibold uppercase tracking-[0.24em] text-neutral-700">
+              Ocray
+            </span>
+          </NavLink>
+
+          <nav className="flex flex-wrap items-center gap-2">
+            {links.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.to === '/'}
+                className={getNavLinkClassName('minimal')}
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
+        </div>
+      </header>
+    );
+  }
+
   return (
     <header className="sticky top-0 z-20 border-b border-zinc-100 bg-white px-6 py-6 md:px-10 lg:px-16">
       <div className="mx-auto flex max-w-6xl flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -36,7 +77,7 @@ const NavBar = () => {
               key={link.to}
               to={link.to}
               end={link.to === '/'}
-              className={navLinkClassName}
+              className={getNavLinkClassName('default')}
             >
               {link.label}
             </NavLink>
