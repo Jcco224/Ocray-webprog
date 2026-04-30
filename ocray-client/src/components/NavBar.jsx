@@ -71,18 +71,35 @@ const NavBar = ({ variant = 'default' }) => {
           </div>
         </NavLink>
 
-        <nav className="flex w-fit flex-wrap items-center gap-8">
-          {links.map((link) => (
+        <div className="flex flex-wrap items-center gap-6">
+          <nav className="flex w-fit flex-wrap items-center gap-8">
+            {links.map((link) => (
+              <NavLink
+                key={link.to}
+                to={link.to}
+                end={link.to === '/'}
+                className={getNavLinkClassName('default')}
+              >
+                {link.label}
+              </NavLink>
+            ))}
+          </nav>
+
+          <div className="flex flex-wrap items-center gap-3">
             <NavLink
-              key={link.to}
-              to={link.to}
-              end={link.to === '/'}
-              className={getNavLinkClassName('default')}
+              to="/auth/signin"
+              className="rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 transition hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-zinc-50 hover:text-zinc-950"
             >
-              {link.label}
+              Log In
             </NavLink>
-          ))}
-        </nav>
+            <NavLink
+              to="/auth/signup"
+              className="rounded-xl border border-zinc-300 bg-zinc-100 px-5 py-2.5 text-sm font-semibold text-zinc-950 transition hover:-translate-y-0.5 hover:border-zinc-400 hover:bg-white hover:shadow-sm"
+            >
+              Sign Up
+            </NavLink>
+          </div>
+        </div>
       </div>
     </header>
   );
