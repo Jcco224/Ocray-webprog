@@ -1,31 +1,49 @@
-import { Link, Outlet } from 'react-router-dom';
+import { Link, Outlet, useLocation } from 'react-router-dom';
 
 const AuthLayout = () => {
-  return (
-    <section className="min-h-screen bg-zinc-100 text-zinc-900">
-      <div className="grid min-h-screen w-full lg:grid-cols-[1fr_0.95fr]">
-        <div className="flex items-center justify-center border-b-2 border-zinc-300 bg-zinc-200 p-8 sm:p-10 lg:border-b-0 lg:border-r-2 lg:border-zinc-300 lg:p-16">
-          <div className="flex w-full max-w-md items-center justify-center rounded-[2rem] border-2 border-dashed border-zinc-300 bg-zinc-100/60 p-8 sm:p-10">
-            <div className="relative aspect-square w-full max-w-[18rem] border-[10px] border-zinc-50/90">
-              <span className="absolute left-1/2 top-0 h-full w-2 -translate-x-1/2 rotate-45 bg-zinc-50/90" />
-              <span className="absolute left-1/2 top-0 h-full w-2 -translate-x-1/2 -rotate-45 bg-zinc-50/90" />
-            </div>
-          </div>
-        </div>
+  const { pathname } = useLocation();
+  const isSignUp = pathname.includes('/signup');
 
-        <main className="flex items-center bg-zinc-50 px-6 py-10 sm:px-10 lg:px-16">
-          <div className="mx-auto w-full max-w-md">
-            <Outlet />
-            <div className="mt-6">
-              <Link
-                to="/"
-                className="rounded-xl border border-zinc-200 bg-white px-5 py-2.5 text-sm font-semibold text-zinc-700 shadow-sm transition hover:-translate-y-0.5 hover:border-zinc-300 hover:bg-zinc-100 hover:text-zinc-950"
-              >
-                Back Home
-              </Link>
+  return (
+    <section className="min-h-screen bg-gradient-to-br from-[#f3c783] via-[#e8b0bb] to-[#8aa8f2] p-4 sm:p-8">
+      <div className="mx-auto w-full max-w-[1400px] overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#6e56f5] via-[#5a72ff] to-[#4eb8ff] shadow-[0_24px_70px_rgba(24,24,27,0.25)]">
+        <div className="grid min-h-[720px] grid-cols-1 lg:grid-cols-2">
+          <div className="relative flex items-center justify-center p-6 sm:p-10">
+            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center opacity-25" />
+            <div className="relative w-full max-w-md -rotate-[5deg] rounded-[2rem] bg-white p-7 shadow-[0_24px_70px_rgba(24,24,27,0.22)]">
+              <Outlet />
             </div>
           </div>
-        </main>
+
+          <aside className="flex items-center p-8 sm:p-12">
+            <div className="text-white">
+              <h2 className="text-5xl font-extrabold leading-[1.05] sm:text-7xl">
+                Perfect
+                <br />
+                {isSignUp ? 'signup' : 'login'}
+              </h2>
+
+              <ul className="mt-8 space-y-3 text-2xl sm:text-4xl">
+                <li>◦ Universal</li>
+                <li>◦ High conversion</li>
+                <li>◦ Desktop &amp; Mobile</li>
+              </ul>
+
+              <div className="mt-10 inline-flex items-center rounded-full bg-black px-7 py-3 text-2xl font-semibold">
+                
+              </div>
+
+              <div className="mt-8">
+                <Link
+                  to="/"
+                  className="inline-flex rounded-xl border border-white/35 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20"
+                >
+                  Back Home
+                </Link>
+              </div>
+            </div>
+          </aside>
+        </div>
       </div>
     </section>
   );
