@@ -5,44 +5,53 @@ const AuthLayout = () => {
   const isSignUp = pathname.includes('/signup');
 
   return (
-    <section className="min-h-screen bg-gradient-to-br from-[#f3c783] via-[#e8b0bb] to-[#8aa8f2] p-4 sm:p-8">
-      <div className="mx-auto w-full max-w-[1400px] overflow-hidden rounded-[2rem] bg-gradient-to-r from-[#6e56f5] via-[#5a72ff] to-[#4eb8ff] shadow-[0_24px_70px_rgba(24,24,27,0.25)]">
-        <div className="grid min-h-[720px] grid-cols-1 lg:grid-cols-2">
-          <div className="relative flex items-center justify-center p-6 sm:p-10">
-            <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=1600&auto=format&fit=crop')] bg-cover bg-center opacity-25" />
-            <div className="relative w-full max-w-md -rotate-[5deg] rounded-[2rem] bg-white p-7 shadow-[0_24px_70px_rgba(24,24,27,0.22)]">
-              <Outlet />
+    <section className="min-h-screen bg-zinc-200 p-4 sm:p-8">
+      <div className="mx-auto grid min-h-[780px] w-full max-w-7xl grid-cols-1 overflow-hidden rounded-[2rem] border border-black bg-zinc-100 lg:grid-cols-2">
+        <div className="relative border-b border-black bg-zinc-100 p-8 lg:border-b-0 lg:border-r lg:p-12">
+          <div className="absolute inset-0 opacity-20 [background-image:linear-gradient(to_right,#111827_1px,transparent_1px),linear-gradient(to_bottom,#111827_1px,transparent_1px)] [background-size:22px_22px]" />
+          <div className="relative">
+            <p className="text-xs font-semibold uppercase tracking-[0.3em] text-zinc-500">
+              Secure Access
+            </p>
+            <h2 className="mt-4 text-4xl font-black uppercase leading-tight text-black sm:text-5xl">
+              {isSignUp ? 'Build Your Identity' : 'Welcome Back Engineer'}
+            </h2>
+            <p className="mt-6 max-w-md text-sm leading-7 text-zinc-700">
+              John Carlo Ocray portfolio access for web development and network engineering articles.
+            </p>
+
+            <img
+              src="https://images.unsplash.com/photo-1518770660439-4636190af475?auto=format&fit=crop&w=1400&q=80"
+              alt="Network hardware and engineering workspace"
+              className="mt-10 h-56 w-full rounded-2xl border border-black object-cover"
+            />
+
+            <div className="mt-8 grid grid-cols-3 gap-3">
+              {[
+                ['12', 'Projects'],
+                ['24', 'Articles'],
+                ['99%', 'Uptime'],
+              ].map(([value, label]) => (
+                <div key={label} className="rounded-xl border border-black bg-zinc-50 px-4 py-3">
+                  <p className="text-lg font-bold text-black">{value}</p>
+                  <p className="text-[10px] uppercase tracking-[0.24em] text-zinc-600">{label}</p>
+                </div>
+              ))}
             </div>
+
+            <Link
+              to="/"
+              className="mt-8 inline-flex rounded-lg border border-black px-4 py-2 text-xs font-semibold uppercase tracking-[0.2em] text-black transition hover:bg-zinc-100"
+            >
+              Back Home
+            </Link>
           </div>
+        </div>
 
-          <aside className="flex items-center p-8 sm:p-12">
-            <div className="text-white">
-              <h2 className="text-5xl font-extrabold leading-[1.05] sm:text-7xl">
-                Perfect
-                <br />
-                {isSignUp ? 'signup' : 'login'}
-              </h2>
-
-              <ul className="mt-8 space-y-3 text-2xl sm:text-4xl">
-                <li>◦ Universal</li>
-                <li>◦ High conversion</li>
-                <li>◦ Desktop &amp; Mobile</li>
-              </ul>
-
-              <div className="mt-10 inline-flex items-center rounded-full bg-black px-7 py-3 text-2xl font-semibold">
-                
-              </div>
-
-              <div className="mt-8">
-                <Link
-                  to="/"
-                  className="inline-flex rounded-xl border border-white/35 bg-white/10 px-5 py-2.5 text-sm font-semibold text-white transition hover:bg-white/20"
-                >
-                  Back Home
-                </Link>
-              </div>
-            </div>
-          </aside>
+        <div className="flex items-center justify-center p-6 sm:p-10">
+          <div className="w-full max-w-xl rounded-[1.75rem] border border-black bg-zinc-100 p-4 sm:p-6">
+            <Outlet />
+          </div>
         </div>
       </div>
     </section>

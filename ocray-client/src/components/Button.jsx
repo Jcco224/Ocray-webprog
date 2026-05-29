@@ -2,9 +2,9 @@ import { Link } from 'react-router-dom';
 
 const variantClasses = {
   primary:
-    'border-cyan-400 bg-cyan-400 text-white shadow-sm hover:border-cyan-500 hover:bg-cyan-500',
+    'border-black bg-black text-white shadow-sm hover:bg-zinc-800',
   secondary:
-    'border-zinc-200 bg-white text-zinc-600 hover:bg-zinc-50 hover:text-zinc-900',
+    'border-black bg-white text-zinc-900 hover:bg-zinc-100',
 };
 
 const Button = ({
