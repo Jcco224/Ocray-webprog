@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { ADMIN_CREDENTIALS, loginAdmin } from '../../utils/adminAuth';
+import { loginAdmin } from '../../utils/adminAuth';
 
 const inputClasses =
   'mt-2 w-full rounded-xl border border-black bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-300';
@@ -38,12 +38,6 @@ const SignInPage = () => {
       </div>
 
       <form className="space-y-5 bg-zinc-100 px-7 py-7" onSubmit={handleSubmit}>
-        <div className="rounded-2xl border border-black bg-zinc-50 p-4 text-sm text-zinc-800">
-          <p className="font-semibold uppercase tracking-[0.18em]">Default Admin</p>
-          <p className="mt-2">Email: {ADMIN_CREDENTIALS.email}</p>
-          <p>Password: {ADMIN_CREDENTIALS.password}</p>
-        </div>
-
         <div>
           <label htmlFor="signin-email" className="text-sm font-semibold text-zinc-800">
             Email Address
