@@ -22,32 +22,19 @@ import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
 import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
+import ArticleIcon from '@mui/icons-material/Article';
 import Button from '@mui/material/Button';
-import { isAdminAuthenticated, logoutAdmin } from '../utils/adminAuth';
- 
+import { canAccessUsersPage, isAdminAuthenticated, logoutAdmin } from '../utils/adminAuth';
+
 const drawerWidth = 240;
- 
+
 const dashboardNavItems = [
-  {
-    label: 'Dashboard',
-    title: 'Dashboard',
-    to: '/dashboard',
-    icon: <DashboardIcon />,
-  },
-  {
-    label: 'Reports',
-    title: 'Reports',
-    to: '/dashboard/reports',
-    icon: <AssessmentIcon />,
-  },
-  {
-    label: 'Users',
-    title: 'Users',
-    to: '/dashboard/users',
-    icon: <PeopleIcon />,
-  },
+  { label: 'Dashboard', title: 'Dashboard', to: '/dashboard', icon: <DashboardIcon /> },
+  { label: 'Reports', title: 'Reports', to: '/dashboard/reports', icon: <AssessmentIcon /> },
+  { label: 'Articles', title: 'Articles', to: '/dashboard/articles', icon: <ArticleIcon /> },
+  { label: 'Users', title: 'Users', to: '/dashboard/users', icon: <PeopleIcon /> },
 ];
- 
+
 const openedMixin = (theme) => ({
   width: drawerWidth,
   transition: theme.transitions.create('width', {
@@ -56,7 +43,7 @@ const openedMixin = (theme) => ({
   }),
   overflowX: 'hidden',
 });
- 
+
 const closedMixin = (theme) => ({
   transition: theme.transitions.create('width', {
     easing: theme.transitions.easing.sharp,
@@ -68,7 +55,7 @@ const closedMixin = (theme) => ({
     width: `calc(${theme.spacing(8)} + 1px)`,
   },
 });
- 
+
 const DrawerHeader = styled('div')(({ theme }) => ({
   display: 'flex',
   alignItems: 'center',
@@ -76,7 +63,7 @@ const DrawerHeader = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 1),
   ...theme.mixins.toolbar,
 }));
- 
+
 const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -94,7 +81,7 @@ const AppBar = styled(MuiAppBar, {
     }),
   }),
 }));
- 
+
 const Drawer = styled(MuiDrawer, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
@@ -111,7 +98,7 @@ const Drawer = styled(MuiDrawer, {
     '& .MuiDrawer-paper': closedMixin(theme),
   }),
 }));
- 
+
 const SearchContainer = styled('div')(({ theme }) => ({
   padding: theme.spacing(0, 2),
   height: '100%',
@@ -121,7 +108,7 @@ const SearchContainer = styled('div')(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'center',
 }));
- 
+
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
@@ -137,7 +124,7 @@ const Search = styled('div')(({ theme }) => ({
     width: 'auto',
   },
 }));
- 
+
 const StyledInputBase = styled(InputBase)(({ theme }) => ({
   color: 'inherit',
   '& .MuiInputBase-input': {
@@ -150,36 +137,42 @@ const StyledInputBase = styled(InputBase)(({ theme }) => ({
     },
   },
 }));
- 
+
 const getPageTitle = (pathname) =>
   dashboardNavItems.find((item) => item.to === pathname)?.title ?? 'Welcome';
- 
+
 const DashLayout = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
   const location = useLocation();
   const pageTitle = getPageTitle(location.pathname);
   const navigate = useNavigate();
+  const canManageUsers = canAccessUsersPage();
 
   useEffect(() => {
     if (!isAdminAuthenticated()) {
       navigate('/auth/signin', { replace: true });
+      return;
     }
-  }, [navigate]);
- 
+
+    if (location.pathname === '/dashboard/users' && !canManageUsers) {
+      navigate('/dashboard', { replace: true });
+    }
+  }, [canManageUsers, location.pathname, navigate]);
+
   const handleDrawerOpen = () => {
     setOpen(true);
   };
- 
+
   const handleDrawerClose = () => {
     setOpen(false);
   };
- 
+
   const handleLogout = () => {
     logoutAdmin();
     navigate('/');
   };
- 
+
   return (
     <MuiBox sx={{ display: 'flex' }}>
       <CssBaseline />
@@ -192,14 +185,9 @@ const DashLayout = () => {
             edge="start"
             sx={{ marginRight: 5, ...(open && { display: 'none' }) }}
           >
-            {open ? <MenuIcon /> : <MenuIcon />}
+            <MenuIcon />
           </IconButton>
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            sx={{ flexGrow: 1 }}
-          >
+          <Typography variant="h6" noWrap component="div" sx={{ flexGrow: 1 }}>
             {pageTitle}
           </Typography>
           <Search>
@@ -219,40 +207,38 @@ const DashLayout = () => {
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <IconButton onClick={handleDrawerClose}>
-            {theme.direction === 'rtl' ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
+            {theme.direction === 'rtl' ? <ChevronRightIcon /> : <ChevronLeftIcon />}
           </IconButton>
         </DrawerHeader>
         <Divider />
         <List>
-          {dashboardNavItems.map(({ label, to, icon }) => (
-            <ListItem key={to} disablePadding sx={{ display: 'block' }}>
-              <ListItemButton
-                component={Link}
-                to={to}
-                selected={location.pathname === to}
-                sx={{
-                  minHeight: 48,
-                  px: 2.5,
-                  justifyContent: open ? 'initial' : 'center',
-                }}
-              >
-                <ListItemIcon
+          {dashboardNavItems
+            .filter((item) => (item.to === '/dashboard/users' ? canManageUsers : true))
+            .map(({ label, to, icon }) => (
+              <ListItem key={to} disablePadding sx={{ display: 'block' }}>
+                <ListItemButton
+                  component={Link}
+                  to={to}
+                  selected={location.pathname === to}
                   sx={{
-                    minWidth: 0,
-                    mr: open ? 3 : 'auto',
-                    justifyContent: 'center',
+                    minHeight: 48,
+                    px: 2.5,
+                    justifyContent: open ? 'initial' : 'center',
                   }}
                 >
-                  {icon}
-                </ListItemIcon>
-                <ListItemText primary={label} sx={{ opacity: open ? 1 : 0 }} />
-              </ListItemButton>
-            </ListItem>
-          ))}
+                  <ListItemIcon
+                    sx={{
+                      minWidth: 0,
+                      mr: open ? 3 : 'auto',
+                      justifyContent: 'center',
+                    }}
+                  >
+                    {icon}
+                  </ListItemIcon>
+                  <ListItemText primary={label} sx={{ opacity: open ? 1 : 0 }} />
+                </ListItemButton>
+              </ListItem>
+            ))}
         </List>
       </Drawer>
       <MuiBox component="main" sx={{ flexGrow: 1, p: 3 }}>
@@ -262,5 +248,5 @@ const DashLayout = () => {
     </MuiBox>
   );
 };
- 
+
 export default DashLayout;

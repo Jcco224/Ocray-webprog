@@ -1,8 +1,9 @@
 import { Link, useParams } from 'react-router-dom';
-import articles from '../../assets/articles';
+import { getArticles } from '../../services/articleService';
 
 function ArticlePage() {
   const { name } = useParams();
+  const articles = getArticles();
   const article = articles.find((item) => item.name === name);
 
   if (!article) {
