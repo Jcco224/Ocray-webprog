@@ -5,6 +5,9 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
+import { BarChart } from '@mui/x-charts/BarChart';
+import { Gauge } from '@mui/x-charts/Gauge';
+import { PieChart } from '@mui/x-charts/PieChart';
 import { DataGrid } from '@mui/x-data-grid';
 import {
   dashboardColors,
@@ -281,6 +284,97 @@ const ReportsPage = () => {
       </Stack>
 
       <Stack ref={printRef} spacing={3}>
+        <Card sx={panelSx}>
+          <CardContent>
+            <Typography variant="h6" sx={{ color: dashboardColors.ink, fontWeight: 800 }}>
+              Monthly Report Output
+            </Typography>
+            <Typography variant="body2" sx={{ mb: 2, color: dashboardColors.muted }}>
+              Generated and completed reports across the latest reporting months.
+            </Typography>
+            <BarChart
+              height={300}
+              xAxis={[
+                {
+                  data: ['January', 'February', 'March', 'April'],
+                  scaleType: 'band',
+                },
+              ]}
+              series={[
+                {
+                  data: [18, 24, 20, 27],
+                  label: 'Generated',
+                  color: dashboardColors.blue,
+                },
+                {
+                  data: [12, 19, 17, 23],
+                  label: 'Completed',
+                  color: dashboardColors.cyan,
+                },
+              ]}
+            />
+          </CardContent>
+        </Card>
+
+        <Box
+          sx={{
+            display: 'grid',
+            gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' },
+            gap: 3,
+          }}
+        >
+          <Card sx={panelSx}>
+            <CardContent>
+              <Typography variant="h6" sx={{ color: dashboardColors.ink, fontWeight: 800 }}>
+                Report Category Share
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2, color: dashboardColors.muted }}>
+                Distribution of report requests by category.
+              </Typography>
+              <PieChart
+                height={260}
+                series={[
+                  {
+                    innerRadius: 55,
+                    outerRadius: 95,
+                    paddingAngle: 4,
+                    data: [
+                      { id: 0, value: 14, label: 'Sales', color: dashboardColors.blue },
+                      { id: 1, value: 10, label: 'Users', color: dashboardColors.cyan },
+                      { id: 2, value: 8, label: 'Inventory', color: dashboardColors.amber },
+                      { id: 3, value: 6, label: 'Finance', color: dashboardColors.violet },
+                    ],
+                  },
+                ]}
+              />
+            </CardContent>
+          </Card>
+
+          <Card sx={panelSx}>
+            <CardContent>
+              <Typography variant="h6" sx={{ color: dashboardColors.ink, fontWeight: 800 }}>
+                Completion Rate
+              </Typography>
+              <Typography variant="body2" sx={{ mb: 2, color: dashboardColors.muted }}>
+                Reports completed on time during the latest cycle.
+              </Typography>
+              <Box sx={{ display: 'flex', minHeight: 260, alignItems: 'center', justifyContent: 'center' }}>
+                <Gauge
+                  width={220}
+                  height={220}
+                  value={78}
+                  startAngle={-110}
+                  endAngle={110}
+                  sx={{
+                    '& .MuiGauge-valueArc': { fill: dashboardColors.green },
+                    '& .MuiGauge-referenceArc': { fill: '#e8edf4' },
+                  }}
+                />
+              </Box>
+            </CardContent>
+          </Card>
+        </Box>
+
         <Card sx={panelSx}>
           <CardContent>
             <DataGrid
