@@ -22,8 +22,14 @@ import { DataGrid } from '@mui/x-data-grid';
 import usersSeed from '../../data/users.json?raw';
 import { createUser, fetchUsers, updateUser } from '../../services/UserService';
 import { canAccessUsersPage } from '../../utils/adminAuth';
+import {
+  dashboardColors,
+  dataGridSx,
+  pageHeaderSx,
+  panelSx,
+} from './dashboardStyles';
 
-const roles = ['admin', 'editor', 'viewer'];
+const roles = ['admin', 'editor', 'viewer', 'user'];
 const genders = ['male', 'female', 'other'];
 
 const blankForm = {
@@ -386,20 +392,10 @@ const UsersPage = () => {
       minWidth: 170,
       valueGetter: (value, row) => `${row.firstName} ${row.lastName}`.trim(),
     },
-    { field: 'username', headerName: 'Username', minWidth: 150 },
-    { field: 'age', headerName: 'Age', width: 90 },
-    {
-      field: 'gender',
-      headerName: 'Gender',
-      minWidth: 110,
-      valueGetter: (value, row) => labelize(row.gender),
-    },
-    { field: 'contactNumber', headerName: 'Contact Number', minWidth: 168 },
-    { field: 'email', headerName: 'Email', flex: 1.1, minWidth: 228 },
     {
       field: 'role',
       headerName: 'Role',
-      minWidth: 180,
+      minWidth: 110,
       valueGetter: (value, row) => labelize(row.role),
     },
     {
@@ -416,6 +412,16 @@ const UsersPage = () => {
         />
       ),
     },
+    { field: 'username', headerName: 'Username', minWidth: 140 },
+    { field: 'email', headerName: 'Email', flex: 1, minWidth: 200 },
+    { field: 'age', headerName: 'Age', width: 80 },
+    {
+      field: 'gender',
+      headerName: 'Gender',
+      minWidth: 100,
+      valueGetter: (value, row) => labelize(row.gender),
+    },
+    { field: 'contactNumber', headerName: 'Contact Number', minWidth: 155 },
     {
       field: 'actions',
       headerName: 'Actions',
@@ -444,7 +450,7 @@ const UsersPage = () => {
     <Box sx={{ width: '100%', minWidth: 0 }}>
       <Box
         sx={{
-          mb: 3,
+          ...pageHeaderSx,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -452,11 +458,24 @@ const UsersPage = () => {
           flexWrap: 'wrap',
         }}
       >
-        <Typography variant="h4">Users</Typography>
+        <Box>
+          <Typography
+            variant="overline"
+            sx={{ color: dashboardColors.blue, fontWeight: 800, letterSpacing: 2 }}
+          >
+            Account Directory
+          </Typography>
+          <Typography variant="h4" sx={{ color: dashboardColors.ink, fontWeight: 900 }}>
+            Users
+          </Typography>
+          <Typography sx={{ mt: 1, color: dashboardColors.muted }}>
+            Search, filter, and manage account access.
+          </Typography>
+        </Box>
         <Button
           variant="contained"
           onClick={() => openModal()}
-          sx={{ width: { xs: '100%', sm: 'auto' } }}
+          sx={{ width: { xs: '100%', sm: 'auto' }, bgcolor: dashboardColors.ink }}
         >
           Add User
         </Button>
@@ -478,7 +497,14 @@ const UsersPage = () => {
         </Alert>
       ) : null}
 
-      <Paper sx={{ p: { xs: 1.5, sm: 2 }, minWidth: 0, overflow: 'hidden' }}>
+      <Paper
+        sx={{
+          ...panelSx,
+          p: { xs: 1.5, sm: 2.5 },
+          minWidth: 0,
+          overflow: 'hidden',
+        }}
+      >
         {users.length ? (
           <>
             <Stack
@@ -553,6 +579,7 @@ const UsersPage = () => {
                     pagination: { paginationModel: { pageSize: 5, page: 0 } },
                   }}
                   sx={{
+                    ...dataGridSx,
                     minWidth: 0,
                     '& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader': {
                       outline: 'none',

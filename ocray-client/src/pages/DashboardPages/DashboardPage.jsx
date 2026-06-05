@@ -1,364 +1,250 @@
-import { BarChart } from '@mui/x-charts/BarChart';
-import { DataGrid } from '@mui/x-data-grid';
-import { Gauge } from '@mui/x-charts/Gauge';
-import { PieChart } from '@mui/x-charts/PieChart';
 import {
   Avatar,
   Box,
   Card,
   CardContent,
   Chip,
-  LinearProgress,
   Stack,
   Typography,
 } from '@mui/material';
-import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import ArticleIcon from '@mui/icons-material/Article';
+import PeopleAltIcon from '@mui/icons-material/PeopleAlt';
 import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import VisibilityIcon from '@mui/icons-material/Visibility';
+import { BarChart } from '@mui/x-charts/BarChart';
+import { LineChart } from '@mui/x-charts/LineChart';
+import { PieChart } from '@mui/x-charts/PieChart';
 import L from 'leaflet';
 import { MapContainer, Marker, Popup, TileLayer } from 'react-leaflet';
 import markerIcon2x from 'leaflet/dist/images/marker-icon-2x.png';
 import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import 'leaflet/dist/leaflet.css';
- 
+import {
+  dashboardColors,
+  pageHeaderSx,
+  panelSx,
+} from './dashboardStyles';
+
 L.Icon.Default.mergeOptions({
   iconRetinaUrl: markerIcon2x,
   iconUrl: markerIcon,
   shadowUrl: markerShadow,
 });
- 
-const rows = [
-  { id: 1, lastName: 'Snow', firstName: 'Jon', age: 14, status: 'Active' },
-  { id: 2, lastName: 'Lannister', firstName: 'Cersei', age: 31, status: 'Active' },
-  { id: 3, lastName: 'Lannister', firstName: 'Jaime', age: 31, status: 'Pending' },
-  { id: 4, lastName: 'Stark', firstName: 'Arya', age: 11, status: 'Active' },
-  { id: 5, lastName: 'Targaryen', firstName: 'Daenerys', age: null, status: 'Review' },
-  { id: 6, lastName: 'Melisandre', firstName: null, age: 150, status: 'Review' },
-  { id: 7, lastName: 'Clifford', firstName: 'Ferrara', age: 44, status: 'Active' },
-  { id: 8, lastName: 'Frances', firstName: 'Rossini', age: 36, status: 'Pending' },
-  { id: 9, lastName: 'Roxie', firstName: 'Harvey', age: 65, status: 'Active' },
-];
- 
-const columns = [
-  { field: 'id', headerName: 'ID', width: 80 },
-  {
-    field: 'firstName',
-    headerName: 'First name',
-    flex: 1,
-    minWidth: 130,
-    editable: true,
-  },
-  {
-    field: 'lastName',
-    headerName: 'Last name',
-    flex: 1,
-    minWidth: 130,
-    editable: true,
-  },
-  {
-    field: 'age',
-    headerName: 'Age',
-    type: 'number',
-    width: 100,
-    editable: true,
-  },
-  {
-    field: 'status',
-    headerName: 'Status',
-    width: 130,
-    renderCell: (params) => (
-      <Chip
-        label={params.value}
-        size="small"
-        color={params.value === 'Active' ? 'success' : 'warning'}
-        variant="outlined"
-      />
-    ),
-  },
-  {
-    field: 'fullName',
-    headerName: 'Full name',
-    sortable: false,
-    flex: 1,
-    minWidth: 170,
-    valueGetter: (value, row) =>
-      `${row.firstName || ''} ${row.lastName || ''}`,
-  },
-];
- 
-const averageAge =
-  rows.reduce((sum, row) => sum + (row.age || 0), 0) /
-  rows.filter((row) => row.age !== null).length;
- 
+
 const summaryCards = [
   {
     label: 'Total Users',
-    value: rows.length,
-    note: 'Registered records',
+    value: '1,215',
+    change: '+12.4%',
     icon: <PeopleAltIcon />,
-    color: '#0284c7',
-    progress: 72,
-  },
-  {
-    label: 'Articles',
-    value: '8',
-    note: 'Published content',
-    icon: <ArticleIcon />,
-    color: '#7c3aed',
-    progress: 58,
+    color: dashboardColors.cyan,
+    spark: [12, 18, 15, 24, 20, 28, 25],
   },
   {
     label: 'Page Views',
-    value: '12.4k',
-    note: 'This quarter',
+    value: '42.2k',
+    change: '+8.1%',
     icon: <VisibilityIcon />,
-    color: '#16a34a',
-    progress: 84,
+    color: dashboardColors.blue,
+    spark: [18, 17, 22, 20, 28, 25, 32],
+  },
+  {
+    label: 'Articles',
+    value: '311',
+    change: '+5.7%',
+    icon: <ArticleIcon />,
+    color: dashboardColors.coral,
+    spark: [25, 21, 23, 18, 22, 16, 19],
   },
   {
     label: 'Growth',
-    value: '+18%',
-    note: 'Compared with last month',
+    value: '22%',
+    change: '+3.2%',
     icon: <TrendingUpIcon />,
-    color: '#ea580c',
-    progress: 66,
+    color: dashboardColors.violet,
+    spark: [11, 14, 12, 19, 16, 24, 21],
   },
 ];
- 
-const cardSx = {
-  border: '1px solid',
-  borderColor: 'divider',
-  borderRadius: 2,
-  boxShadow: '0 12px 30px rgba(15, 23, 42, 0.06)',
-};
- 
+
+const PanelTitle = ({ title, subtitle }) => (
+  <Box sx={{ mb: 2 }}>
+    <Typography variant="h6" sx={{ color: dashboardColors.ink, fontWeight: 800 }}>
+      {title}
+    </Typography>
+    <Typography variant="body2" sx={{ color: dashboardColors.muted }}>
+      {subtitle}
+    </Typography>
+  </Box>
+);
+
 function DashboardPage() {
   return (
-    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-      <Box
-        sx={{
-          borderRadius: 3,
-          border: '1px solid',
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
-          p: { xs: 3, md: 4 },
-        }}
-      >
+    <Box>
+      <Box sx={pageHeaderSx}>
         <Stack
           direction={{ xs: 'column', md: 'row' }}
           justifyContent="space-between"
           spacing={2}
         >
           <Box>
-            <Typography variant="overline" color="text.secondary">
-              Overview
+            <Typography
+              variant="overline"
+              sx={{ color: dashboardColors.blue, fontWeight: 800, letterSpacing: 2 }}
+            >
+              Analytics Overview
             </Typography>
-            <Typography variant="h4" sx={{ mt: 0.5, fontWeight: 800 }}>
-              Dashboard Summary
+            <Typography variant="h4" sx={{ color: dashboardColors.ink, fontWeight: 900 }}>
+              Dashboard Performance
             </Typography>
-            <Typography color="text.secondary" sx={{ mt: 1, maxWidth: 640 }}>
-              A clean snapshot of users, content activity, performance, and
-              location data for the admin dashboard.
+            <Typography sx={{ mt: 1, color: dashboardColors.muted }}>
+              A clear view of audience, content, and engagement performance.
             </Typography>
           </Box>
-          <Chip label="Live overview" color="primary" sx={{ alignSelf: 'flex-start' }} />
+          <Chip label="Updated today" sx={{ alignSelf: 'flex-start', bgcolor: '#e8f1ff', color: dashboardColors.blue, fontWeight: 800 }} />
         </Stack>
       </Box>
- 
+
       <Box
         sx={{
           display: 'grid',
-          gridTemplateColumns: {
-            xs: '1fr',
-            sm: 'repeat(2, minmax(0, 1fr))',
-            lg: 'repeat(4, minmax(0, 1fr))',
-          },
+          gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', xl: 'repeat(4, 1fr)' },
           gap: 2,
+          mb: 2,
         }}
       >
-        {summaryCards.map(({ label, value, note, icon, color, progress }) => (
-          <Card key={label} sx={cardSx}>
-            <CardContent>
-              <Stack direction="row" justifyContent="space-between" spacing={2}>
+        {summaryCards.map((card) => (
+          <Card key={card.label} sx={{ ...panelSx, borderTop: `4px solid ${card.color}` }}>
+            <CardContent sx={{ pb: '16px !important' }}>
+              <Stack direction="row" justifyContent="space-between" alignItems="flex-start">
                 <Box>
-                  <Typography variant="body2" color="text.secondary">
-                    {label}
+                  <Typography variant="body2" sx={{ color: dashboardColors.muted, fontWeight: 700 }}>
+                    {card.label}
                   </Typography>
-                  <Typography variant="h4" sx={{ mt: 1, fontWeight: 800 }}>
-                    {value}
+                  <Typography variant="h4" sx={{ mt: 0.5, color: dashboardColors.ink, fontWeight: 900 }}>
+                    {card.value}
+                  </Typography>
+                  <Typography variant="caption" sx={{ color: dashboardColors.green, fontWeight: 800 }}>
+                    {card.change} this month
                   </Typography>
                 </Box>
-                <Avatar sx={{ bgcolor: color }}>
-                  {icon}
-                </Avatar>
+                <Avatar sx={{ bgcolor: card.color, width: 40, height: 40 }}>{card.icon}</Avatar>
               </Stack>
-              <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>
-                {note}
-              </Typography>
-              <LinearProgress
-                variant="determinate"
-                value={progress}
-                sx={{ mt: 2, height: 7, borderRadius: 99 }}
+              <LineChart
+                height={70}
+                margin={{ top: 8, right: 0, bottom: 0, left: 0 }}
+                series={[{ data: card.spark, color: card.color, showMark: false }]}
+                xAxis={[{ data: card.spark.map((_, index) => index), hideTooltip: true }]}
+                leftAxis={null}
+                bottomAxis={null}
               />
             </CardContent>
           </Card>
         ))}
       </Box>
- 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', lg: '1.4fr 0.8fr' },
-          gap: 2,
-        }}
-      >
-        <Card sx={cardSx}>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '0.8fr 1.4fr' }, gap: 2, mb: 2 }}>
+        <Card sx={panelSx}>
           <CardContent>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Quarterly Performance
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              Comparison of visits and signups by quarter.
-            </Typography>
-            <Box sx={{ mt: 2, width: '100%', overflowX: 'auto' }}>
-              <BarChart
-                series={[
-                  { data: [35, 44, 24, 34], label: 'Visits' },
-                  { data: [21, 36, 29, 43], label: 'Signups' },
-                ]}
-                height={300}
-                xAxis={[
-                  {
-                    data: ['Q1', 'Q2', 'Q3', 'Q4'],
-                    scaleType: 'band',
-                    label: 'Quarters',
-                  },
-                ]}
-              />
-            </Box>
+            <PanelTitle title="Audience Status" subtitle="Current account distribution" />
+            <PieChart
+              height={290}
+              series={[{
+                innerRadius: 72,
+                outerRadius: 110,
+                paddingAngle: 4,
+                data: [
+                  { id: 0, value: 58, label: 'Active', color: dashboardColors.cyan },
+                  { id: 1, value: 24, label: 'Pending', color: dashboardColors.amber },
+                  { id: 2, value: 18, label: 'Review', color: dashboardColors.violet },
+                ],
+              }]}
+            />
           </CardContent>
         </Card>
- 
-        <Card sx={cardSx}>
+
+        <Card sx={panelSx}>
           <CardContent>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Audience Mix
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              User distribution and average age target.
-            </Typography>
-            <Stack alignItems="center" spacing={2} sx={{ mt: 2 }}>
-              <Gauge
-                width={170}
-                height={130}
-                value={Number(averageAge.toFixed(1))}
-                valueMin={10}
-                valueMax={80}
-              />
-              <PieChart
-                series={[
-                  {
-                    data: [
-                      { id: 0, value: 55, label: 'Active' },
-                      { id: 1, value: 25, label: 'Pending' },
-                      { id: 2, value: 20, label: 'Review' },
-                    ],
-                  },
-                ]}
-                width={260}
-                height={190}
-              />
-            </Stack>
+            <PanelTitle title="Traffic Trends" subtitle="Views, visitors, and article reads" />
+            <LineChart
+              height={290}
+              xAxis={[{ data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], scaleType: 'point' }]}
+              series={[
+                { data: [32, 44, 38, 56, 49, 64], label: 'Views', color: dashboardColors.blue, showMark: false },
+                { data: [20, 31, 28, 42, 38, 51], label: 'Visitors', color: dashboardColors.green, showMark: false },
+                { data: [14, 22, 19, 27, 31, 36], label: 'Reads', color: dashboardColors.amber, showMark: false },
+              ]}
+            />
           </CardContent>
         </Card>
       </Box>
- 
-      <Box
-        sx={{
-          display: 'grid',
-          gridTemplateColumns: { xs: '1fr', xl: '1.2fr 0.8fr' },
-          gap: 2,
-        }}
-      >
-        <Card sx={cardSx}>
+
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 1fr' }, gap: 2 }}>
+        <Card sx={panelSx}>
           <CardContent>
-            <Stack
-              direction={{ xs: 'column', sm: 'row' }}
-              justifyContent="space-between"
-              spacing={1}
-              sx={{ mb: 2 }}
-            >
-              <Box>
-                <Typography variant="h6" sx={{ fontWeight: 700 }}>
-                  Users Overview
-                </Typography>
-                <Typography variant="body2" color="text.secondary">
-                  Editable user records with quick status scanning.
-                </Typography>
-              </Box>
-              <Chip label={`${rows.length} records`} variant="outlined" />
-            </Stack>
-            <Box sx={{ height: 420, width: '100%' }}>
-              <DataGrid
-                rows={rows}
-                columns={columns}
-                initialState={{
-                  pagination: {
-                    paginationModel: {
-                      pageSize: 5,
-                    },
-                  },
-                }}
-                pageSizeOptions={[5]}
-                checkboxSelection
-                disableRowSelectionOnClick
-              />
-            </Box>
+            <PanelTitle title="Content Output" subtitle="Published content by category" />
+            <BarChart
+              height={300}
+              xAxis={[{ data: ['Web', 'Network', 'Security', 'Cloud', 'Other'], scaleType: 'band' }]}
+              series={[
+                { data: [26, 34, 22, 29, 18], label: 'Published', color: dashboardColors.blue },
+                { data: [12, 18, 14, 16, 9], label: 'Drafts', color: dashboardColors.cyan },
+              ]}
+            />
           </CardContent>
         </Card>
- 
-        <Card sx={cardSx}>
+
+        <Card sx={panelSx}>
           <CardContent>
-            <Typography variant="h6" sx={{ fontWeight: 700 }}>
-              Location Map
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-              National University-Manila, Sampaloc.
-            </Typography>
-            <Box
-              sx={{
-                height: 420,
-                width: '100%',
-                overflow: 'hidden',
-                borderRadius: 2,
-                border: '1px solid',
-                borderColor: 'divider',
-              }}
-            >
-              <MapContainer
-                center={[14.604253, 120.994314]}
-                zoom={13}
-                style={{ height: '100%', width: '100%' }}
-              >
-                <TileLayer
-                  url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-                  attribution="&copy; OpenStreetMap contributors"
-                />
-                <Marker position={[14.604253, 120.994314]}>
-                  <Popup>
-                    National University-Manila <br />
-                    551 F Jhocson St, Sampaloc, Manila, 1008 Metro Manila
-                  </Popup>
-                </Marker>
-              </MapContainer>
-            </Box>
+            <PanelTitle title="Engagement by Month" subtitle="Visits compared with conversions" />
+            <BarChart
+              height={300}
+              xAxis={[{ data: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'], scaleType: 'band' }]}
+              series={[
+                { data: [38, 44, 48, 53, 57, 65], label: 'Visits', color: dashboardColors.violet },
+                { data: [18, 24, 26, 31, 34, 39], label: 'Conversions', color: dashboardColors.coral },
+              ]}
+            />
           </CardContent>
         </Card>
       </Box>
+
+      <Card sx={{ ...panelSx, mt: 2 }}>
+        <CardContent>
+          <PanelTitle
+            title="Location Map"
+            subtitle="National University-Manila, Sampaloc"
+          />
+          <Box
+            sx={{
+              height: 380,
+              width: '100%',
+              overflow: 'hidden',
+              border: `1px solid ${dashboardColors.border}`,
+              borderRadius: 2,
+            }}
+          >
+            <MapContainer
+              center={[14.604253, 120.994314]}
+              zoom={14}
+              style={{ height: '100%', width: '100%' }}
+            >
+              <TileLayer
+                url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+                attribution="&copy; OpenStreetMap contributors"
+              />
+              <Marker position={[14.604253, 120.994314]}>
+                <Popup>
+                  National University-Manila <br />
+                  551 F Jhocson St, Sampaloc, Manila
+                </Popup>
+              </Marker>
+            </MapContainer>
+          </Box>
+        </CardContent>
+      </Card>
     </Box>
   );
 }
- 
+
 export default DashboardPage;

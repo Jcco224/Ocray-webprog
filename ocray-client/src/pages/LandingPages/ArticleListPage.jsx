@@ -1,13 +1,8 @@
-import { useEffect, useState } from 'react';
 import ArticleList from '../../components/ArticleList';
 import { getArticles } from '../../services/articleService';
 
 function ArticleListPage() {
-  const [articles, setArticles] = useState([]);
-
-  useEffect(() => {
-    setArticles(getArticles());
-  }, []);
+  const articles = getArticles();
 
   return (
     <main className="mx-auto max-w-6xl py-12 text-zinc-900">

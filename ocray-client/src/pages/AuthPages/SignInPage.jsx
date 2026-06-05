@@ -27,7 +27,12 @@ function SignInPage() {
       localStorage.setItem('firstName', data.firstName);
       localStorage.setItem('type', data.type);
 
-      navigate('/dashboard', {
+      const userType = String(data.type || '').toLowerCase();
+      const destination = userType === 'admin' || userType === 'editor'
+        ? '/dashboard'
+        : '/';
+
+      navigate(destination, {
         state: { firstName: data.firstName, type: data.type },
       });
     } catch (err) {

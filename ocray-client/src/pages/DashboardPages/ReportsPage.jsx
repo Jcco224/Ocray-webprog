@@ -5,10 +5,13 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { BarChart } from '@mui/x-charts/BarChart';
-import { Gauge } from '@mui/x-charts/Gauge';
-import { PieChart } from '@mui/x-charts/PieChart';
 import { DataGrid } from '@mui/x-data-grid';
+import {
+  dashboardColors,
+  dataGridSx,
+  pageHeaderSx,
+  panelSx,
+} from './dashboardStyles';
 
 const columns = [
   { field: 'id', headerName: 'ID', width: 90 },
@@ -234,20 +237,23 @@ const ReportsPage = () => {
         justifyContent="space-between"
         alignItems={{ xs: 'flex-start', md: 'center' }}
         spacing={2}
-        sx={{ mb: 4 }}
+        sx={pageHeaderSx}
       >
         <Box>
-          <Typography variant="h4" gutterBottom>
+          <Typography variant="overline" sx={{ color: dashboardColors.blue, fontWeight: 800, letterSpacing: 2 }}>
+            Reporting Center
+          </Typography>
+          <Typography variant="h4" sx={{ color: dashboardColors.ink, fontWeight: 900 }}>
             Reports
           </Typography>
-          <Typography variant="body1" color="text.secondary">
+          <Typography variant="body1" sx={{ mt: 1, color: dashboardColors.muted }}>
             Report analytics overview showing generated reports, category
             breakdown, and current completion performance.
           </Typography>
         </Box>
 
         <Stack direction="row" spacing={1.5} flexWrap="wrap" useFlexGap>
-          <Button variant="contained">Generate</Button>
+          <Button variant="contained" sx={{ bgcolor: dashboardColors.ink }}>Generate</Button>
           <Button variant="outlined" onClick={handlePrint}>
             Export
           </Button>
@@ -261,12 +267,12 @@ const ReportsPage = () => {
         sx={{ mb: 3 }}
       >
         {summaryStats.map((stat) => (
-          <Card key={stat.label} sx={{ minWidth: 180 }}>
+          <Card key={stat.label} sx={{ ...panelSx, minWidth: 180, flex: 1 }}>
             <CardContent>
-              <Typography variant="overline" color="text.secondary">
+              <Typography variant="overline" sx={{ color: dashboardColors.muted, fontWeight: 800 }}>
                 {stat.label}
               </Typography>
-              <Typography variant="h4" sx={{ fontWeight: 800 }}>
+              <Typography variant="h4" sx={{ color: dashboardColors.ink, fontWeight: 900 }}>
                 {stat.value}
               </Typography>
             </CardContent>
@@ -275,99 +281,7 @@ const ReportsPage = () => {
       </Stack>
 
       <Stack ref={printRef} spacing={3}>
-        <Card>
-          <CardContent>
-            <Typography variant="h6" gutterBottom>
-              Monthly Report Output
-            </Typography>
-            <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-              This chart compares how many reports were generated and how many
-              were completed across the last four months.
-            </Typography>
-            <BarChart
-              series={[
-                {
-                  data: [18, 24, 20, 27],
-                  label: 'Generated',
-                },
-                {
-                  data: [12, 19, 17, 23],
-                  label: 'Completed',
-                },
-              ]}
-              height={300}
-              xAxis={[
-                {
-                  data: ['January', 'February', 'March', 'April'],
-                  scaleType: 'band',
-                  label: 'Months',
-                },
-              ]}
-            />
-          </CardContent>
-        </Card>
-
-        <Stack direction={{ xs: 'column', lg: 'row' }} spacing={3}>
-          <Card sx={{ flex: 1 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Report Category Share
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ mb: 3 }}
-              >
-                This chart shows the distribution of report requests by
-                category for the current reporting period.
-              </Typography>
-              <Box sx={{ display: 'flex', justifyContent: 'center' }}>
-                <PieChart
-                  series={[
-                    {
-                      data: [
-                        { id: 0, value: 14, label: 'Sales' },
-                        { id: 1, value: 10, label: 'Users' },
-                        { id: 2, value: 8, label: 'Inventory' },
-                        { id: 3, value: 6, label: 'Finance' },
-                      ],
-                    },
-                  ]}
-                  width={280}
-                  height={220}
-                />
-              </Box>
-            </CardContent>
-          </Card>
-
-          <Card sx={{ flex: 1 }}>
-            <CardContent>
-              <Typography variant="h6" gutterBottom>
-                Completion Rate
-              </Typography>
-              <Typography
-                variant="body2"
-                color="text.secondary"
-                sx={{ mb: 3 }}
-              >
-                The gauge highlights the current percentage of reports
-                completed on time based on the latest reporting cycle.
-              </Typography>
-              <Box
-                sx={{
-                  minHeight: 220,
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                }}
-              >
-                <Gauge width={180} height={180} value={78} />
-              </Box>
-            </CardContent>
-          </Card>
-        </Stack>
-
-        <Card>
+        <Card sx={panelSx}>
           <CardContent>
             <DataGrid
               rows={rows}
@@ -382,6 +296,7 @@ const ReportsPage = () => {
               pageSizeOptions={[5]}
               checkboxSelection
               disableRowSelectionOnClick
+              sx={dataGridSx}
             />
           </CardContent>
         </Card>

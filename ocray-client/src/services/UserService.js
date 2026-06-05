@@ -26,6 +26,8 @@ const request = async (path, options = {}) => {
 export const fetchUsers = () => request('/');
 export const createUser = (user) =>
   request('/', { method: 'POST', body: JSON.stringify(user) });
+export const registerUser = (user) =>
+  request('/register', { method: 'POST', body: JSON.stringify(user) });
 export const updateUser = (id, user) =>
   request(`/${id}`, { method: 'PUT', body: JSON.stringify(user) });
 export const deleteUser = (id) => request(`/${id}`, { method: 'DELETE' });

@@ -1,4 +1,5 @@
-import { NavLink } from 'react-router-dom';
+import { NavLink, useNavigate } from 'react-router-dom';
+import { getUserType, logoutAdmin } from '../utils/adminAuth';
 
 const links = [
   { label: 'Home', to: '/' },
@@ -25,6 +26,18 @@ const getNavLinkClassName = (variant) => ({ isActive }) => {
 
 const NavBar = ({ variant = 'default' }) => {
   const isMinimal = variant === 'minimal';
+  const navigate = useNavigate();
+  const token = window.localStorage.getItem('token');
+  const firstName = window.localStorage.getItem('firstName');
+  const userType = getUserType();
+  const isSignedIn = Boolean(token);
+  const canOpenDashboard = ['admin', 'editor'].includes(userType);
+
+  const handleLogout = () => {
+    logoutAdmin();
+    navigate('/');
+    window.location.reload();
+  };
 
   if (isMinimal) {
     return (
@@ -85,18 +98,43 @@ const NavBar = ({ variant = 'default' }) => {
           </nav>
 
           <div className="flex flex-wrap items-center gap-3">
-            <NavLink
-              to="/auth/signin"
-              className="rounded-xl border border-black bg-white px-5 py-2.5 text-sm font-semibold !text-black transition hover:-translate-y-0.5 hover:bg-zinc-100"
-            >
-              Log In
-            </NavLink>
-            <NavLink
-              to="/auth/signup"
-              className="rounded-xl border border-black bg-black px-5 py-2.5 text-sm font-semibold !text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
-            >
-              Sign Up
-            </NavLink>
+            {isSignedIn ? (
+              <>
+                <span className="text-sm font-semibold text-zinc-700">
+                  Hi, {firstName || 'User'}
+                </span>
+                {canOpenDashboard ? (
+                  <NavLink
+                    to="/dashboard"
+                    className="rounded-xl border border-black bg-white px-5 py-2.5 text-sm font-semibold !text-black transition hover:-translate-y-0.5 hover:bg-zinc-100"
+                  >
+                    Dashboard
+                  </NavLink>
+                ) : null}
+                <button
+                  type="button"
+                  onClick={handleLogout}
+                  className="rounded-xl border border-black bg-black px-5 py-2.5 text-sm font-semibold text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
+                >
+                  Log Out
+                </button>
+              </>
+            ) : (
+              <>
+                <NavLink
+                  to="/auth/signin"
+                  className="rounded-xl border border-black bg-white px-5 py-2.5 text-sm font-semibold !text-black transition hover:-translate-y-0.5 hover:bg-zinc-100"
+                >
+                  Log In
+                </NavLink>
+                <NavLink
+                  to="/auth/signup"
+                  className="rounded-xl border border-black bg-black px-5 py-2.5 text-sm font-semibold !text-white transition hover:-translate-y-0.5 hover:bg-zinc-800"
+                >
+                  Sign Up
+                </NavLink>
+              </>
+            )}
           </div>
         </div>
       </div>

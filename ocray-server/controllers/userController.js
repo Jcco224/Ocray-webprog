@@ -26,6 +26,30 @@ const createUser = async (req, res) => {
   }
 };
 
+const registerUser = async (req, res) => {
+  try {
+    if (!req.body.password) {
+      return res.status(400).json({ message: 'Password is required' });
+    }
+
+    const hashedPassword = await bcrypt.hash(req.body.password, 10);
+    const user = await User.create({
+      ...req.body,
+      role: 'user',
+      password: hashedPassword,
+    });
+
+    res.status(201).json({
+      message: 'Account created successfully',
+      id: user._id,
+      email: user.email,
+      role: user.role,
+    });
+  } catch (error) {
+    res.status(400).json({ message: error.message });
+  }
+};
+
 const updateUser = async (req, res) => {
   try {
     if (req.body.password) {
@@ -96,4 +120,11 @@ const loginUser = async (req, res) => {
   }
 };
 
-module.exports = { getUsers, createUser, updateUser, deleteUser, loginUser };
+module.exports = {
+  getUsers,
+  createUser,
+  registerUser,
+  updateUser,
+  deleteUser,
+  loginUser,
+};

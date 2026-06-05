@@ -5,7 +5,7 @@ export function getUserType() {
 export function isAdminAuthenticated() {
   const token = window.localStorage.getItem('token');
   const userType = getUserType();
-  return Boolean(token) && userType !== 'viewer';
+  return Boolean(token) && ['admin', 'editor'].includes(userType);
 }
 
 export function canAccessUsersPage() {

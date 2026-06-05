@@ -1,6 +1,6 @@
 import { useMemo, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import { createUser } from '../../services/UserService';
+import { registerUser } from '../../services/UserService';
 
 const inputClasses =
   'mt-2 w-full rounded-xl border border-black bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-300';
@@ -56,14 +56,13 @@ const SignUpPage = () => {
 
     try {
       setLoading(true);
-      await createUser({
+      await registerUser({
         firstName: form.firstName.trim(),
         lastName: form.lastName.trim(),
         age: form.age.trim(),
         gender: form.gender.trim().toLowerCase(),
         contactNumber: form.contactNumber.trim(),
         email: form.email.trim().toLowerCase(),
-        role: 'editor',
         username: (form.username.trim() || suggestedUsername).toLowerCase(),
         password: form.password,
         address: form.address.trim(),

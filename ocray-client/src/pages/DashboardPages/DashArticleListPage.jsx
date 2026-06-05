@@ -16,6 +16,12 @@ import {
   getArticles,
   updateArticle,
 } from '../../services/articleService';
+import {
+  dashboardColors,
+  dataGridSx,
+  pageHeaderSx,
+  panelSx,
+} from './dashboardStyles';
 
 const blankForm = {
   name: '',
@@ -168,10 +174,20 @@ const DashArticleListPage = () => {
         justifyContent="space-between"
         alignItems={{ xs: 'stretch', sm: 'center' }}
         spacing={2}
-        sx={{ mb: 2 }}
+        sx={pageHeaderSx}
       >
-        <Typography variant="h4">Dashboard Articles</Typography>
-        <Button variant="contained" onClick={() => openModal()}>
+        <Box>
+          <Typography variant="overline" sx={{ color: dashboardColors.blue, fontWeight: 800, letterSpacing: 2 }}>
+            Content Library
+          </Typography>
+          <Typography variant="h4" sx={{ color: dashboardColors.ink, fontWeight: 900 }}>
+            Articles
+          </Typography>
+          <Typography sx={{ mt: 1, color: dashboardColors.muted }}>
+            Manage published stories, drafts, and article content.
+          </Typography>
+        </Box>
+        <Button variant="contained" onClick={() => openModal()} sx={{ bgcolor: dashboardColors.ink }}>
           Add Article
         </Button>
       </Stack>
@@ -182,7 +198,7 @@ const DashArticleListPage = () => {
         </Alert>
       ) : null}
 
-      <Paper sx={{ p: 2 }}>
+      <Paper sx={{ ...panelSx, p: { xs: 2, md: 3 } }}>
         <TextField
           fullWidth
           label="Search articles"
@@ -198,6 +214,7 @@ const DashArticleListPage = () => {
             disableRowSelectionOnClick
             pageSizeOptions={[5, 10]}
             initialState={{ pagination: { paginationModel: { pageSize: 5, page: 0 } } }}
+            sx={dataGridSx}
           />
         </Box>
       </Paper>

@@ -24,7 +24,12 @@ import PeopleIcon from '@mui/icons-material/People';
 import AssessmentIcon from '@mui/icons-material/Assessment';
 import ArticleIcon from '@mui/icons-material/Article';
 import Button from '@mui/material/Button';
-import { canAccessUsersPage, isAdminAuthenticated, logoutAdmin } from '../utils/adminAuth';
+import {
+  canAccessUsersPage,
+  getUserType,
+  isAdminAuthenticated,
+  logoutAdmin,
+} from '../utils/adminAuth';
 
 const drawerWidth = 240;
 
@@ -68,6 +73,10 @@ const AppBar = styled(MuiAppBar, {
   shouldForwardProp: (prop) => prop !== 'open',
 })(({ theme, open }) => ({
   zIndex: theme.zIndex.drawer + 1,
+  backgroundColor: '#ffffff',
+  color: '#17223b',
+  borderBottom: '1px solid #dce4ef',
+  boxShadow: 'none',
   transition: theme.transitions.create(['width', 'margin'], {
     easing: theme.transitions.easing.sharp,
     duration: theme.transitions.duration.leavingScreen,
@@ -89,6 +98,11 @@ const Drawer = styled(MuiDrawer, {
   flexShrink: 0,
   whiteSpace: 'nowrap',
   boxSizing: 'border-box',
+  '& .MuiDrawer-paper': {
+    backgroundColor: '#ffffff',
+    color: '#17223b',
+    borderRight: '1px solid #dce4ef',
+  },
   ...(open && {
     ...openedMixin(theme),
     '& .MuiDrawer-paper': openedMixin(theme),
@@ -112,9 +126,10 @@ const SearchContainer = styled('div')(({ theme }) => ({
 const Search = styled('div')(({ theme }) => ({
   position: 'relative',
   borderRadius: theme.shape.borderRadius,
-  backgroundColor: 'rgba(255, 255, 255, 0.15)',
+  backgroundColor: '#f4f7fb',
+  border: '1px solid #dce4ef',
   '&:hover': {
-    backgroundColor: 'rgba(255, 255, 255, 0.25)',
+    backgroundColor: '#eef3f8',
   },
   marginRight: theme.spacing(2),
   marginLeft: 0,
@@ -151,7 +166,7 @@ const DashLayout = () => {
 
   useEffect(() => {
     if (!isAdminAuthenticated()) {
-      navigate('/auth/signin', { replace: true });
+      navigate(getUserType() === 'user' ? '/' : '/auth/signin', { replace: true });
       return;
     }
 
@@ -174,7 +189,7 @@ const DashLayout = () => {
   };
 
   return (
-    <MuiBox sx={{ display: 'flex' }}>
+    <MuiBox sx={{ display: 'flex', minHeight: '100vh', bgcolor: '#f4f7fb' }}>
       <CssBaseline />
       <AppBar position="fixed" open={open}>
         <Toolbar>
@@ -222,8 +237,16 @@ const DashLayout = () => {
                   selected={location.pathname === to}
                   sx={{
                     minHeight: 48,
+                    mx: 1,
+                    my: 0.5,
+                    borderRadius: 2,
                     px: 2.5,
                     justifyContent: open ? 'initial' : 'center',
+                    '&.Mui-selected': {
+                      bgcolor: '#17223b',
+                      color: '#fff',
+                      '& .MuiListItemIcon-root': { color: '#fff' },
+                    },
                   }}
                 >
                   <ListItemIcon
@@ -241,7 +264,7 @@ const DashLayout = () => {
             ))}
         </List>
       </Drawer>
-      <MuiBox component="main" sx={{ flexGrow: 1, p: 3 }}>
+      <MuiBox component="main" sx={{ flexGrow: 1, minWidth: 0, p: { xs: 2, md: 3.5 } }}>
         <DrawerHeader />
         <Outlet />
       </MuiBox>
