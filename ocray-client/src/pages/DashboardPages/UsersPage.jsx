@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Alert,
@@ -20,8 +20,13 @@ import Visibility from '@mui/icons-material/Visibility';
 import VisibilityOff from '@mui/icons-material/VisibilityOff';
 import { DataGrid } from '@mui/x-data-grid';
 import usersSeed from '../../data/users.json?raw';
-import { createUser, fetchUsers, updateUser } from '../../services/UserService';
 import { canAccessUsersPage } from '../../utils/adminAuth';
+import {
+  dashboardColors,
+  dataGridSx,
+  pageHeaderSx,
+  panelSx,
+} from './dashboardStyles';
 
 const roles = ['admin', 'editor', 'viewer'];
 const genders = ['male', 'female', 'other'];
@@ -133,61 +138,13 @@ const UsersPage = () => {
   const [genderFilter, setGenderFilter] = useState('all');
   const [statusFilter, setStatusFilter] = useState('all');
   const [confirmation, setConfirmation] = useState('');
-  const [loading, setLoading] = useState(false);
-  const [loadError, setLoadError] = useState(seed.error);
-
-  const normalizeUserRecord = (user, index) => {
-    const seededName = splitName(user.name);
-    const firstName = String(user.firstName ?? seededName.firstName).trim();
-    const lastName = String(user.lastName ?? seededName.lastName).trim();
-    const email = String(user.email ?? '').trim().toLowerCase();
-
-    return {
-      id: user._id || Number(user.id) || index + 1,
-      firstName,
-      lastName,
-      age: String(user.age ?? '').trim(),
-      gender: genders.includes(String(user.gender ?? '').trim().toLowerCase())
-        ? String(user.gender ?? '').trim().toLowerCase()
-        : '',
-      contactNumber: String(user.contactNumber ?? '').trim(),
-      email,
-      role: normalizeRole(user.role ?? user.type),
-      username: String(user.username ?? email.split('@')[0] ?? '')
-        .trim()
-        .toLowerCase(),
-      password: String(user.password ?? ''),
-      address: String(user.address ?? user.department ?? '').trim(),
-      isActive: normalizeStatus(user.status, user.isActive),
-    };
-  };
-
-  const loadUsersFromApi = useCallback(async () => {
-    setLoading(true);
-    setLoadError('');
-
-    try {
-      const { data } = await fetchUsers();
-      const incoming = Array.isArray(data) ? data : [];
-      setUsers(incoming.map((user, index) => normalizeUserRecord(user, index)));
-    } catch (error) {
-      setUsers(seed.users);
-      setLoadError(
-        error.response?.data?.message ||
-          'Unable to fetch users from server. Showing local seed data.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, []);
+  const [loadError] = useState(seed.error);
 
   useEffect(() => {
     if (!canAccessUsersPage()) {
       navigate('/dashboard', { replace: true });
-      return;
     }
-    loadUsersFromApi();
-  }, [loadUsersFromApi, navigate]);
+  }, [navigate]);
 
   const resetForm = () => {
     setForm({ ...blankForm });
@@ -306,26 +263,24 @@ const UsersPage = () => {
       isActive: form.isActive,
     };
 
-    try {
-      if (modal.id) {
-        const payload = { ...nextUser };
-
-        if (!payload.password) {
-          delete payload.password;
-        }
-
-        await updateUser(modal.id, payload);
-        setConfirmation('User updated successfully.');
-      } else {
-        await createUser(nextUser);
-        setConfirmation('New user saved successfully.');
-      }
-
-      closeModal();
-      await loadUsersFromApi();
-    } catch (error) {
-      setLoadError(error.response?.data?.message || 'Unable to save user.');
+    if (modal.id) {
+      setUsers((currentUsers) =>
+        currentUsers.map((user) =>
+          user.id === modal.id
+            ? { ...user, ...nextUser, password: nextUser.password || user.password }
+            : user
+        )
+      );
+      setConfirmation('User updated successfully.');
+    } else {
+      setUsers((currentUsers) => [
+        ...currentUsers,
+        { ...nextUser, id: Date.now() },
+      ]);
+      setConfirmation('New user saved successfully.');
     }
+
+    closeModal();
   };
 
   const toggleStatus = async (id) => {
@@ -334,19 +289,16 @@ const UsersPage = () => {
       return;
     }
 
-    try {
-      await updateUser(id, { isActive: !selectedUser.isActive });
-      setConfirmation(
-        `${selectedUser.firstName} ${selectedUser.lastName} is now ${
-          selectedUser.isActive ? 'inactive' : 'active'
-        }.`
-      );
-      await loadUsersFromApi();
-    } catch (error) {
-      setLoadError(
-        error.response?.data?.message || 'Unable to update user status.'
-      );
-    }
+    setUsers((currentUsers) =>
+      currentUsers.map((user) =>
+        user.id === id ? { ...user, isActive: !user.isActive } : user
+      )
+    );
+    setConfirmation(
+      `${selectedUser.firstName} ${selectedUser.lastName} is now ${
+        selectedUser.isActive ? 'inactive' : 'active'
+      }.`
+    );
   };
 
   const fieldProps = (name, label, extra = {}) => ({
@@ -444,7 +396,7 @@ const UsersPage = () => {
     <Box sx={{ width: '100%', minWidth: 0 }}>
       <Box
         sx={{
-          mb: 3,
+          ...pageHeaderSx,
           display: 'flex',
           justifyContent: 'space-between',
           alignItems: 'center',
@@ -452,11 +404,21 @@ const UsersPage = () => {
           flexWrap: 'wrap',
         }}
       >
-        <Typography variant="h4">Users</Typography>
+        <Box>
+          <Typography variant="overline" sx={{ color: dashboardColors.blue, fontWeight: 800, letterSpacing: 2 }}>
+            Account Directory
+          </Typography>
+          <Typography variant="h4" sx={{ color: dashboardColors.ink, fontWeight: 900 }}>
+            Users
+          </Typography>
+          <Typography sx={{ mt: 1, color: dashboardColors.muted }}>
+            Search, filter, and manage account access.
+          </Typography>
+        </Box>
         <Button
           variant="contained"
           onClick={() => openModal()}
-          sx={{ width: { xs: '100%', sm: 'auto' } }}
+          sx={{ width: { xs: '100%', sm: 'auto' }, bgcolor: dashboardColors.ink }}
         >
           Add User
         </Button>
@@ -478,7 +440,7 @@ const UsersPage = () => {
         </Alert>
       ) : null}
 
-      <Paper sx={{ p: { xs: 1.5, sm: 2 }, minWidth: 0, overflow: 'hidden' }}>
+      <Paper sx={{ ...panelSx, p: { xs: 1.5, sm: 2.5 }, minWidth: 0, overflow: 'hidden' }}>
         {users.length ? (
           <>
             <Stack
@@ -547,12 +509,12 @@ const UsersPage = () => {
                   columns={columns}
                   getRowId={(row) => row.id}
                   disableRowSelectionOnClick
-                  loading={loading}
                   pageSizeOptions={[5, 10]}
                   initialState={{
                     pagination: { paginationModel: { pageSize: 5, page: 0 } },
                   }}
                   sx={{
+                    ...dataGridSx,
                     minWidth: 0,
                     '& .MuiDataGrid-cell, & .MuiDataGrid-columnHeader': {
                       outline: 'none',
