@@ -38,6 +38,17 @@ app.use((req, res, next) => {
   next();
 });
 
+app.get('/', (req, res) => {
+  res.json({
+    message: 'Ocray API is running',
+    endpoints: ['/api/users', '/api/articles', '/api/health'],
+  });
+});
+
+app.get('/api/health', (req, res) => {
+  res.json({ status: 'ok' });
+});
+
 app.use('/api/users', userRoutes);
 app.use('/api/articles', articleRoutes);
 
