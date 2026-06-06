@@ -2,12 +2,9 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { loginUser } from '../../services/UserService';
 
-const inputClasses =
-  'mt-2 w-full rounded-xl border border-black bg-zinc-50 px-4 py-3 text-sm text-zinc-900 outline-none transition placeholder:text-zinc-500 focus:ring-2 focus:ring-zinc-300';
-
 function SignInPage() {
-  const [email, setEmail] = useState('ocray@admin.com');
-  const [password, setPassword] = useState('ocray123');
+  const [email] = useState('ocray@admin.com');
+  const [password] = useState('ocray123');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
@@ -58,38 +55,6 @@ function SignInPage() {
       </div>
 
       <form className="space-y-5 bg-zinc-100 px-7 py-7" onSubmit={handleLogin}>
-        <div>
-          <label htmlFor="email" className="text-sm font-semibold text-zinc-800">
-            Email
-          </label>
-          <input
-            id="email"
-            type="email"
-            className={inputClasses}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            autoComplete="email"
-            placeholder="name@example.com"
-            required
-          />
-        </div>
-
-        <div>
-          <label htmlFor="password" className="text-sm font-semibold text-zinc-800">
-            Password
-          </label>
-          <input
-            id="password"
-            type="password"
-            className={inputClasses}
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-            autoComplete="current-password"
-            placeholder="Enter your password"
-            required
-          />
-        </div>
-
         {error ? (
           <p className="rounded-xl border border-red-300 bg-red-50 px-4 py-3 text-sm text-red-700">
             {error}
